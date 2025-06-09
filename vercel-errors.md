@@ -13,21 +13,22 @@ In a monorepo workspace setup, the build runs from the root but creates output i
 1. ❌ Tried copying output: `cp -r apps/web/.output/public ./public` - failed because source path didn't exist
 2. ❌ Tried different path variations in `outputDirectory` - paths were incorrect relative to build context
 3. ❌ Tried changing build command to `cd apps/web && npm run build` - directory not found in Vercel environment
-4. ✅ **FINAL SOLUTION**: Set `rootDirectory: "apps/web"` in vercel.json
+4. ❌ Tried `rootDirectory: "apps/web"` but property doesn't exist in vercel.json schema
+5. ✅ **ACTUAL SOLUTION**: Remove vercel.json entirely and fix app.config.ts preset
 
 ### Final Working Configuration
-```json
-{
-  "buildCommand": "cd apps/web && npm run build",
-  "outputDirectory": "apps/web/.output/public",
-  "installCommand": "npm install && npm install --prefix apps/web",
-  "framework": null,
-  "functions": {
-    "apps/web/.output/server/index.mjs": {
-      "runtime": "nodejs18.x"
-    }
+**NO vercel.json needed!** 
+
+Only configure `apps/web/app.config.ts`:
+```typescript
+import { defineConfig } from "@solidjs/start/config";
+
+export default defineConfig({
+  ssr: true,
+  server: {
+    preset: "vercel"  // ← THIS was the key fix!
   }
-}
+});
 ```
 
 ### Update: `rootDirectory` Not Supported
@@ -48,11 +49,33 @@ In a monorepo workspace setup, the build runs from the root but creates output i
 - Vercel needs both static assets and server function configured
 - Current approach: Git integration with proper vercel.json paths
 
-### Key Learnings
-- **Always set `rootDirectory`** for monorepo deployments
-- When `rootDirectory` is set, all paths become relative to that directory
-- Don't try to copy files between directories in build commands
-- The workspace script approach (`npm run build` from root) works but requires correct path configuration
+### Key Learnings - THE REAL ISSUE
+- **Modern SolidStart (1.0.2+) uses `app.config.ts`, NOT `vercel.json`**
+- The preset in `app.config.ts` MUST be `"vercel"`, not `"node-server"`
+- `"node-server"` preset builds for local/traditional hosting, not Vercel serverless
+- Vercel auto-detects SolidStart when preset is correct
+- All our vercel.json troubleshooting was unnecessary - wrong approach entirely
+
+### What We Learned the Hard Way
+- Hours wasted on vercel.json path configurations
+- The real issue was a single line: `preset: "node-server"` → `preset: "vercel"`
+- Modern frameworks use their own config files, not platform-specific configs
+- Always check the framework's deployment preset FIRST
+
+### FINAL SOLUTION - Create New Vercel Project
+When importing from GitHub, Vercel correctly auto-detects:
+- ✅ Framework: SolidStart (v1)
+- ✅ Root Directory: apps/web
+- ✅ Build Command: `npm run build` or `vinxi build`
+- ✅ Output Directory: `.output`
+- ✅ Install Command: Auto npm install
+
+The combination of:
+1. `preset: "vercel"` in app.config.ts 
+2. Proper Root Directory setting in Vercel project
+3. No vercel.json interfering
+
+= SUCCESS!
 
 ### Build Output Analysis
 - Build creates: `[success] [vinxi] Generated public .output/public`
