@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "apps/web/.output/public",
+  "buildCommand": "npm run build && cp -r apps/web/.output/public ./public",
+  "outputDirectory": "public",
   "installCommand": "npm install",
   "framework": null,
   "functions": {
