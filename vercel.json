@@ -1,10 +1,11 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "apps/web/.output/public",
+  "outputDirectory": ".output/public", 
   "installCommand": "npm install",
   "framework": null,
+  "rootDirectory": "apps/web",
   "functions": {
-    "apps/web/.output/server/index.mjs": {
+    ".output/server/index.mjs": {
       "runtime": "nodejs18.x"
     }
   }
