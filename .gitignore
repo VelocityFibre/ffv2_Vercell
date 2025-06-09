@@ -1,0 +1,30 @@
+# Build outputs
+apps/web/.output/
+apps/web/.vinxi/
+apps/web/node_modules/
+minimal-deploy/
+apps/web/app.config.timestamp_*
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+packages/
+deno.lock
+
+# Development files
+docs/
+worktrees/
+claude.md
+
+# Environment
+.env
+.env.local
+
+# Vercel
+.vercel
+
+# Git history (for deployment)
+.git/
