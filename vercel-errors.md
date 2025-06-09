@@ -77,6 +77,22 @@ The combination of:
 
 = SUCCESS!
 
+### Post-Deployment Issue: Blank Page
+**Problem**: Deployment worked but page was blank
+**Cause**: Missing root index route (`/`)
+**Solution**: Created `src/routes/index.tsx` that redirects to `/dashboard`
+
+```typescript
+import { Component } from "solid-js"
+import { Navigate } from "@solidjs/router"
+
+const Index: Component = () => {
+  return <Navigate href="/dashboard" />
+}
+
+export default Index
+```
+
 ### Build Output Analysis
 - Build creates: `[success] [vinxi] Generated public .output/public`
 - This means `.output/public` directory is created in the build context
