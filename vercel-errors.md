@@ -33,7 +33,20 @@ In a monorepo workspace setup, the build runs from the root but creates output i
 ### Update: `rootDirectory` Not Supported
 - `rootDirectory` property does not exist in vercel.json schema
 - Must use `cd apps/web &&` in buildCommand instead
-- Need to install dependencies in both root and apps/web
+- ❌ Tried `npm install --prefix apps/web` but created wrong path `/apps/web/apps/web/`
+- ✅ Use only root `npm install` - workspace handles subdependencies automatically
+
+### Important: This is SolidStart, Not Nuxt
+- Project uses **SolidStart** with **Vinxi** build tool
+- Build output shows `vinxi v0.5.6`, not Nuxt
+- Uses Nitro for server engine (like Nuxt) but deployment differs
+- Vercel should auto-detect SolidStart but may need explicit configuration
+
+### SolidStart + Vercel Deployment Notes
+- SolidStart generates `.output/public` for static assets
+- Server functions go to `.output/server/index.mjs`
+- Vercel needs both static assets and server function configured
+- Current approach: Git integration with proper vercel.json paths
 
 ### Key Learnings
 - **Always set `rootDirectory`** for monorepo deployments
